@@ -1,5 +1,5 @@
-from web_content_client import get_page_content
-from regex_utils import get_total_pages
+from client.web_content_client import get_page_content
+from utils.regex_utils import get_total_pages
 
 url =  'https://www.olx.com.br'
 path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
@@ -14,5 +14,4 @@ for page in range(1, pages + 1):
         ad_content = get_page_content(url=link)
 
     main_content = get_page_content(url=f'{ url }{ path }?o={ page + 1 }')
-
     
