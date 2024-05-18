@@ -1,13 +1,18 @@
 from web_content_client import get_page_content
+from regex_utils import get_total_pages
 
 url =  'https://www.olx.com.br'
 path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
-page_number = 1
 
-main_content = get_page_content(url=f'{ url }{ path }?o={page_number}')
+main_content = get_page_content(url=f'{ url }{ path }?o={1}')
 
-links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
+pages = get_total_pages(main_content)
 
-for link in links:
-    ad_content = get_page_content(url=link)
+for page in range(1, pages + 1):
+    links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
+    for link in links:
+        ad_content = get_page_content(url=link)
+
+    main_content = get_page_content(url=f'{ url }{ path }?o={ page + 1 }')
+
     
