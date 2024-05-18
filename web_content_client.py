@@ -13,4 +13,4 @@ headers = {
 def get_page_content(url: str):
     r = requests.get(url=url, headers=headers)
     content = r.content
-    return BeautifulSoup(content)
+    return BeautifulSoup(content, features="html.parser")
