@@ -115,7 +115,7 @@ class Advertisement(Base):
     __tablename__ = 'advertisement'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    code: Mapped[int] = mapped_column(Integer())
+    code: Mapped[str] = mapped_column(String(15))
     creation_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
     close_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), nullable=True)
     url: Mapped[str] = mapped_column(String(200))

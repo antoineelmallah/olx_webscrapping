@@ -10,7 +10,7 @@ main_content = get_page_content(url=f'{ url }{ path }?o={1}')
 
 pages = get_total_pages(main_content)
 
-for page in range(1, pages + 1):
+for page in range(1, pages):
     links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
     for link in links:
         ad_content = get_page_content(url=link)
