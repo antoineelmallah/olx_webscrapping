@@ -26,7 +26,7 @@ def page_content_to_vehicle_entity(content: BeautifulSoup, advertisement: Advert
 
     return result
 
-def page_content_to_instant_state(content: BeautifulSoup, advertisement: Advertisement, dto) -> InstantState:
+def page_content_to_instant_state_entity(content: BeautifulSoup, advertisement: Advertisement, dto) -> InstantState:
 
     dto_state = dto['state']
     
@@ -34,7 +34,7 @@ def page_content_to_instant_state(content: BeautifulSoup, advertisement: Adverti
     result.price = dto_state['price']
     result.average_price = dto_state['average_price']
     result.fipe_price = dto_state['fipe_price']
-    
+
     return result
 
 def page_content_to_advertising_entity(content: BeautifulSoup, url: str) -> Advertisement:
@@ -49,7 +49,7 @@ def page_content_to_advertising_entity(content: BeautifulSoup, url: str) -> Adve
     result.creation_date = dto['creation_date']
     result.url = url
     result.vehicle = page_content_to_vehicle_entity(content, result, dto)
-    result.states.append(page_content_to_instant_state(content, result, dto))
+    result.states.append(page_content_to_instant_state_entity(content, result, dto))
 
     return result
 

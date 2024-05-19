@@ -117,6 +117,7 @@ class Advertisement(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     code: Mapped[int] = mapped_column(Integer())
     creation_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
+    close_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), nullable=True)
     url: Mapped[str] = mapped_column(String(200))
     zipcode: Mapped[str] = mapped_column(String(8))
     city: Mapped[str] = mapped_column(String(50))
