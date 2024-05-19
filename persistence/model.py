@@ -118,6 +118,9 @@ class Advertisement(Base):
     code: Mapped[int] = mapped_column(Integer())
     creation_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
     url: Mapped[str] = mapped_column(String(200))
+    zipcode: Mapped[str] = mapped_column(String(8))
+    city: Mapped[str] = mapped_column(String(50))
+    neighborhood: Mapped[str] = mapped_column(String(50))
 
     vehicle: Mapped['Vehicle'] = relationship(back_populates='advertisement', cascade='all')
 

@@ -1,5 +1,7 @@
 from client.web_content_client import get_page_content
-from utils.regex_utils import get_total_pages
+from utils.content_extractor import get_total_pages
+from mapper import page_content_to_advertising_entity
+from persistence.repository import persist
 
 url =  'https://www.olx.com.br'
 path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
@@ -12,6 +14,8 @@ for page in range(1, pages + 1):
     links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
     for link in links:
         ad_content = get_page_content(url=link)
+        advertising_entity = page_content_to_advertising_entity(ad_content, link)
+        persist(advertising_entity)
 
     main_content = get_page_content(url=f'{ url }{ path }?o={ page + 1 }')
     
