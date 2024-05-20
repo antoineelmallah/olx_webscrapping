@@ -63,9 +63,3 @@ def page_content_to_advertising_entity(content: BeautifulSoup, url: str) -> mode
     result.states.append(page_content_to_instant_state_entity(result, dto))
 
     return result
-
-from client.web_content_client import get_page_content
-
-url = 'http://localhost:3000/template'
-
-print(page_content_to_advertising_entity(get_page_content(url), url))

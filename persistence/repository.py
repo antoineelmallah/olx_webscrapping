@@ -1,12 +1,10 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload
-from model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
+from persistence.model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
 
 connection_string = 'mariadb+mariadbconnector://admin:698400@127.0.0.1:3306/olx'
 
 engine = create_engine(connection_string, echo=True)
-
-Base.metadata.create_all(engine)
 
 def persist(model):
     with Session(engine) as session:
@@ -35,14 +33,16 @@ def persist_advertisement(adv: Advertisement):
                 persist(adv_from_db)
         else:
             vehicle = adv.vehicle
-            vehicle.brand = find_domain_or_new(vehicle.category.description, Category)
-            vehicle.brand = find_domain_or_new(vehicle.vehicle_type.description, VehicleType)
-            vehicle.brand = find_domain_or_new(vehicle.model.description, Model)
+            vehicle.category = find_domain_or_new(vehicle.category.description, Category)
+            vehicle.vehicle_type = find_domain_or_new(vehicle.vehicle_type.description, VehicleType)
+            vehicle.model = find_domain_or_new(vehicle.model.description, Model)
             vehicle.brand = find_domain_or_new(vehicle.brand.description, Brand)
-            vehicle.brand = find_domain_or_new(vehicle.fuel.description, Fuel)
-            vehicle.brand = find_domain_or_new(vehicle.gear.description, Gear)
-            vehicle.brand = find_domain_or_new(vehicle.steering.description, Steering)
-            vehicle.brand = find_domain_or_new(vehicle.color.description, Color)
+            vehicle.fuel = find_domain_or_new(vehicle.fuel.description, Fuel)
+            vehicle.gear = find_domain_or_new(vehicle.gear.description, Gear)
+            vehicle.steering = find_domain_or_new(vehicle.steering.description, Steering)
+            vehicle.color = find_domain_or_new(vehicle.color.description, Color)
             persist(adv)
                 
 
+if __name__ == '__main__':
+    Base.metadata.create_all(engine)

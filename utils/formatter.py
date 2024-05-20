@@ -1,14 +1,14 @@
 import re
 from datetime import datetime
 
-def get_as_type(code_spipet, pattern, type):
+def get_by_pattern_as_type(code_spipet, pattern, type):
     groups = re.findall(pattern, code_spipet)
     if not len(groups):
         return None
     return type(groups[0])
 
 def get_code(code_snipet):
-    return get_as_type(code_snipet, r'\D+(\d+)', str)
+    return get_by_pattern_as_type(code_snipet, r'\D+(\d+)', str)
 
 def get_creation_datetime(code_snipet):
     groups = re.findall(r'\D+(\d{2})/(\d{2})\D+(\d{2}):\s?(\d{2})', code_snipet)
