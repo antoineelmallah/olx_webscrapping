@@ -18,6 +18,21 @@ class InstantState(Base):
 
     advertisement_id: Mapped[int] = mapped_column(ForeignKey('advertisement.id'))
 
+    def __eq__(self, value: object) -> bool:
+        if not value:
+            return False
+        if type(value) != type(self):
+            return False
+        if self.advertisement_id != value.advertisement_id:
+            return False
+        if self.price != value.price:
+            return False
+        if self.average_price != value.average_price:
+            return False
+        if self.fipe_price != value.fipe_price:
+            return False
+        return True
+
 class Category(Base):
 
     __tablename__ = 'category'
@@ -97,6 +112,9 @@ class Vehicle(Brand):
 
     brand_id: Mapped[Optional[int]] = mapped_column(ForeignKey("brand.id"))
     brand: Mapped[Optional['Brand']] = relationship(cascade='all')
+
+    vehicle_type_id: Mapped[Optional[int]] = mapped_column(ForeignKey("vehicle_type.id"))
+    vehicle_type: Mapped[Optional['VehicleType']] = relationship(cascade='all')
 
     fuel_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fuel.id"))
     fuel: Mapped[Optional['Fuel']] = relationship(cascade='all')

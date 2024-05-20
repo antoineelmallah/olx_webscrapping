@@ -1,7 +1,7 @@
 from client.web_content_client import get_page_content
 from utils.content_extractor import get_total_pages
 from mapper import page_content_to_advertising_entity
-from persistence.repository import persist
+from persistence.repository import persist_advertisement
 
 url =  'https://www.olx.com.br'
 path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
@@ -15,7 +15,7 @@ for page in range(1, pages):
     for link in links:
         ad_content = get_page_content(url=link)
         advertising_entity = page_content_to_advertising_entity(ad_content, link)
-        persist(advertising_entity)
+        persist_advertisement(advertising_entity)
 
     main_content = get_page_content(url=f'{ url }{ path }?o={ page + 1 }')
     

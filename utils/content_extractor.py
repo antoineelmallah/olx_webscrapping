@@ -33,6 +33,7 @@ def read_content(url_content):
     category = url_content.find('span', string='Categoria').next_sibling
     model = url_content.find('span', string='Modelo').next_sibling
     brand = url_content.find('span', string='Marca').next_sibling
+    vehicle_type = url_content.find('span', string='Tipo de veículo').next_sibling
     fuel = url_content.find('span', string='Combustível').next_sibling
     gear = url_content.find('span', string='Câmbio').next_sibling
     color = url_content.find('span', string='Cor').next_sibling
@@ -57,6 +58,7 @@ def read_content(url_content):
             'category': get_value(category),
             'model': get_value(model),
             'brand': get_value(brand),
+            'vehicle_type': get_value(vehicle_type),
             'fuel': get_value(fuel),
             'gear': get_value(gear),
             'color': get_value(color),
@@ -68,3 +70,13 @@ def read_content(url_content):
             'fipe_price': get_value(fipe_price)
         }
     }
+
+import sys
+
+sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
+
+from client.web_content_client import get_page_content
+
+url = 'http://localhost:3000/template'
+
+print(read_content(get_page_content(url)))
