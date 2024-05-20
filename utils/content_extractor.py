@@ -71,12 +71,8 @@ def read_content(url_content):
         }
     }
 
-import sys
-
-sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
-
-from client.web_content_client import get_page_content
-
-url = 'http://localhost:3000/template'
-
-print(read_content(get_page_content(url)))
+#import sys
+#sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
+#from client.web_content_client import get_page_content
+#url = 'http://localhost:3000/template'
+#print(read_content(get_page_content(url)))
