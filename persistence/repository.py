@@ -1,13 +1,14 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload
+import os
 if __name__ == '__main__':
     from model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
 else:
     from persistence.model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
 
-connection_string = 'mariadb+mariadbconnector://admin:698400@127.0.0.1:3306/olx'
+connection_string = os.environ['WEBSCRAPING_DB_CONNECTION_STRING']
 
-engine = create_engine(connection_string, echo=True)
+engine = create_engine(connection_string, echo=False)
 
 def persist(model):
     with Session(engine) as session:

@@ -4,29 +4,36 @@ from mapper import page_content_to_advertising_entity
 from persistence.repository import persist_advertisement
 import logging
 
-log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+def main():
 
-url =  'https://www.olx.com.br'
-path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
+    log = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO)
 
-main_content = get_page_content(url=f'{ url }{ path }?o=1')
+    url =  'https://www.olx.com.br'
+    path = '/autos-e-pecas/carros-vans-e-utilitarios/flex/estado-rj'
 
-pages = get_total_pages(main_content)
+    main_content = get_page_content(url=f'{ url }{ path }?o=1')
 
-logging.info(f'==> Processing page 1/{ pages }')
+    pages = get_total_pages(main_content)
 
-for page in range(2, pages + 1):
-    links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
-    for link in links:
-        logging.info(f' ** Processing link { link }')
-        ad_content = get_page_content(url=link)
-        advertising_entity = page_content_to_advertising_entity(ad_content, link)
-        try:
-            persist_advertisement(advertising_entity)
-        except Exception as e:
-            logging.error(f'ERROR processing link { link }', e)
+    logging.info(f'==> Processing page 1/{ pages }')
 
-    main_content = get_page_content(url=f'{ url }{ path }?o={ page }')
-    
-    logging.info(f'==> Processing page { page }/{ pages }')
+    for page in range(2, pages + 1):
+        links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
+        for link in links:
+            logging.info(f' ** Processing link { link }')
+            ad_content = get_page_content(url=link)
+            advertising_entity = page_content_to_advertising_entity(ad_content, link)
+            try:
+                persist_advertisement(advertising_entity)
+            except Exception as e:
+                logging.error(f'ERROR processing link { link }', e)
+
+        main_content = get_page_content(url=f'{ url }{ path }?o={ page }')
+        
+        logging.info(f'==> Processing page { page }/{ pages }')
+
+#import cProfile
+#cProfile.run('main()')
+
+main()

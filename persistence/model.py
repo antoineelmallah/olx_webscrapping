@@ -23,8 +23,6 @@ class InstantState(Base):
             return False
         if type(value) != type(self):
             return False
-        if self.advertisement_id != value.advertisement_id:
-            return False
         if self.price != value.price:
             return False
         if self.average_price != value.average_price:
