@@ -13,8 +13,8 @@ class InstantState(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     datetime: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
     price: Mapped[Float] = mapped_column(Float())
-    average_price: Mapped[Float] = mapped_column(Float())
-    fipe_price: Mapped[Float] = mapped_column(Float())
+    #average_price: Mapped[Float] = mapped_column(Float())
+    #fipe_price: Mapped[Float] = mapped_column(Float())
 
     advertisement_id: Mapped[int] = mapped_column(ForeignKey('advertisement.id'))
 
@@ -95,11 +95,11 @@ class Vehicle(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str] = mapped_column(String(100))
-    hp: Mapped[Float] = mapped_column(Float())
-    gnv: Mapped[Boolean] = mapped_column(Boolean())
+    hp: Mapped[Float] = mapped_column(Float(), nullable=True)
+    gnv: Mapped[Boolean] = mapped_column(Boolean(), default=False)
     year: Mapped[int] = mapped_column(Integer())
     mileage: Mapped[Float] = mapped_column(Float())
-    doors: Mapped[int] = mapped_column(Integer())
+    doors: Mapped[int] = mapped_column(Integer(), nullable=True)
 
     advertisement_id: Mapped[int] = mapped_column(ForeignKey("advertisement.id"))
     advertisement: Mapped['Advertisement'] = relationship(back_populates="vehicle")

@@ -18,29 +18,44 @@ def get_value(element):
         return None
     return unescape(element.text)
 
+def perform_if_present(value, function):
+    if value:
+        if function:
+            return function(value)
+        return value
+    return None
+
+def extract_price(text):
+    pattern = r'R\S (\d+)\.(\d+)'
+    if text and text.text:
+        matchs = re.search(pattern, text.text)
+        if matchs:
+            return int(''.join(matchs.groups()))
+    return None
+
 def read_content(url_content):
     code = url_content.find('span', attrs={'class', 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-16iz3i7-0 hjLLUR olx-color-neutral-120'})
-    zipcode = url_content.find('span', string='CEP').next_sibling
-    city = url_content.find('span', string='Município').next_sibling
-    neighborhood = url_content.find('span', string='Bairro').next_sibling
+    zipcode = perform_if_present(url_content.find('span', string='CEP'), lambda v : v.next_sibling) 
+    city = perform_if_present(url_content.find('span', string='Município'), lambda v : v.next_sibling) 
+    neighborhood = perform_if_present(url_content.find('span', string='Bairro'), lambda v : v.next_sibling) 
     creation_date = url_content.find('span', attrs={'class': 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-1oq8jzc-0 dWayMW olx-color-neutral-120'})
     description = url_content.find('h1')
-    hp = url_content.find('span', string='Potência do motor').next_sibling
-    gnv = url_content.find('span', string='Possui Kit GNV').next_sibling
-    year = url_content.find('span', string='Ano').next_sibling
-    mileage = url_content.find('span', string='Quilometragem').next_sibling
-    doors = url_content.find('span', string='Portas').next_sibling
-    category = url_content.find('span', string='Categoria').next_sibling
-    model = url_content.find('span', string='Modelo').next_sibling
-    brand = url_content.find('span', string='Marca').next_sibling
-    vehicle_type = url_content.find('span', string='Tipo de veículo').next_sibling
-    fuel = url_content.find('span', string='Combustível').next_sibling
-    gear = url_content.find('span', string='Câmbio').next_sibling
-    color = url_content.find('span', string='Cor').next_sibling
-    steering = url_content.find('span', string='Tipo de direção').next_sibling
-    price = url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bJHaGt'})
-    average_price = url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'})
-    fipe_price = url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'})
+    hp = perform_if_present(url_content.find('span', string='Potência do motor'), lambda v : v.next_sibling) 
+    gnv = perform_if_present(url_content.find('span', string='Possui Kit GNV'), lambda v : v.next_sibling)
+    year = perform_if_present(url_content.find('span', string='Ano'), lambda v : v.next_sibling)
+    mileage = perform_if_present(url_content.find('span', string='Quilometragem'), lambda v : v.next_sibling)
+    doors = perform_if_present(url_content.find('span', string='Portas'), lambda v : v.next_sibling)
+    category = perform_if_present(url_content.find('span', string='Categoria'), lambda v : v.next_sibling)
+    model = perform_if_present(url_content.find('span', string='Modelo'), lambda v : v.next_sibling)
+    brand = perform_if_present(url_content.find('span', string='Marca'), lambda v : v.next_sibling)
+    vehicle_type = perform_if_present(url_content.find('span', string='Tipo de veículo'), lambda v : v.next_sibling)
+    fuel = perform_if_present(url_content.find('span', string='Combustível'), lambda v : v.next_sibling)
+    gear = perform_if_present(url_content.find('span', string='Câmbio'), lambda v : v.next_sibling)
+    color = perform_if_present(url_content.find('span', string='Cor'), lambda v : v.next_sibling)
+    steering = perform_if_present(url_content.find('span', string='Tipo de direção'), lambda v : v.next_sibling)
+    price = perform_if_present(url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bJHaGt'}), lambda v : extract_price(v))
+    average_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
+    fipe_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
 
     return {
         'code': get_value(code),
@@ -65,14 +80,14 @@ def read_content(url_content):
             'steering': get_value(steering),
         },
         'state': {
-            'price': get_value(price),
-            'average_price': get_value(average_price),
-            'fipe_price': get_value(fipe_price)
+            'price': price,
+            'average_price': average_price,
+            'fipe_price': fipe_price
         }
     }
 
-#import sys
-#sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
-#from client.web_content_client import get_page_content
-#url = 'http://localhost:3000/template'
-#print(read_content(get_page_content(url)))
+import sys
+sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
+from client.web_content_client import get_page_content
+url = 'http://localhost:3000/template'
+print(read_content(get_page_content(url)))

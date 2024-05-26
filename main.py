@@ -16,14 +16,17 @@ pages = get_total_pages(main_content)
 
 logging.info(f'==> Processing page 1/{ pages }')
 
-for page in range(2, pages):
-    logging.info(f'==> Processing page { page }/{ pages }')
+for page in range(2, pages + 1):
     links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
     for link in links:
-        logging.info(' ** Processing link { link }')
+        logging.info(f' ** Processing link { link }')
         ad_content = get_page_content(url=link)
         advertising_entity = page_content_to_advertising_entity(ad_content, link)
-        persist_advertisement(advertising_entity)
+        try:
+            persist_advertisement(advertising_entity)
+        except Exception as e:
+            logging.error(f'ERROR processing link { link }', e)
 
-    main_content = get_page_content(url=f'{ url }{ path }?o={ page + 1 }')
+    main_content = get_page_content(url=f'{ url }{ path }?o={ page }')
     
+    logging.info(f'==> Processing page { page }/{ pages }')

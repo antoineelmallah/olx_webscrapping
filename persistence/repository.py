@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload
-from persistence.model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
+if __name__ == '__main__':
+    from model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
+else:
+    from persistence.model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
 
 connection_string = 'mariadb+mariadbconnector://admin:698400@127.0.0.1:3306/olx'
 
@@ -33,14 +36,14 @@ def persist_advertisement(adv: Advertisement):
                 persist(adv_from_db)
         else:
             vehicle = adv.vehicle
-            vehicle.category = find_domain_or_new(vehicle.category.description, Category)
-            vehicle.vehicle_type = find_domain_or_new(vehicle.vehicle_type.description, VehicleType)
-            vehicle.model = find_domain_or_new(vehicle.model.description, Model)
-            vehicle.brand = find_domain_or_new(vehicle.brand.description, Brand)
-            vehicle.fuel = find_domain_or_new(vehicle.fuel.description, Fuel)
-            vehicle.gear = find_domain_or_new(vehicle.gear.description, Gear)
-            vehicle.steering = find_domain_or_new(vehicle.steering.description, Steering)
-            vehicle.color = find_domain_or_new(vehicle.color.description, Color)
+            vehicle.category = find_domain_or_new(vehicle.category.description, Category) if vehicle.category else None
+            vehicle.vehicle_type = find_domain_or_new(vehicle.vehicle_type.description, VehicleType) if vehicle.vehicle_type else None
+            vehicle.model = find_domain_or_new(vehicle.model.description, Model) if vehicle.model else None
+            vehicle.brand = find_domain_or_new(vehicle.brand.description, Brand) if vehicle.brand else None
+            vehicle.fuel = find_domain_or_new(vehicle.fuel.description, Fuel) if vehicle.fuel else None
+            vehicle.gear = find_domain_or_new(vehicle.gear.description, Gear) if vehicle.gear else None
+            vehicle.steering = find_domain_or_new(vehicle.steering.description, Steering) if vehicle.steering else None
+            vehicle.color = find_domain_or_new(vehicle.color.description, Color) if vehicle.color else None
             persist(adv)
                 
 
