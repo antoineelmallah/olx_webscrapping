@@ -10,7 +10,6 @@ def get_total_pages(main_content):
     match = matchs[0]
     page_size = int(match.group(2))
     total_size = int(re.sub(r'\.', '', match.group(3)))
-    print(page_size, '/', total_size)
     return math.ceil(total_size / page_size)
 
 def get_value(element):
@@ -86,8 +85,9 @@ def read_content(url_content):
         }
     }
 
-import sys
-sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
-from client.web_content_client import get_page_content
-url = 'http://localhost:3000/template'
-print(read_content(get_page_content(url)))
+if __name__ == '__main__':
+    import sys
+    sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
+    from client.web_content_client import get_page_content
+    url = 'http://localhost:3000/template'
+    print(read_content(get_page_content(url)))

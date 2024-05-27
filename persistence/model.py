@@ -25,10 +25,10 @@ class InstantState(Base):
             return False
         if self.price != value.price:
             return False
-        if self.average_price != value.average_price:
-            return False
-        if self.fipe_price != value.fipe_price:
-            return False
+#        if self.average_price != value.average_price:
+#            return False
+#        if self.fipe_price != value.fipe_price:
+#            return False
         return True
 
 class Category(Base):

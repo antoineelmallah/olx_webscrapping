@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
-import cloudscraper
+from curl_cffi import requests
 
 def get_page_content(url: str):
-    scraper = cloudscraper.create_scraper()
-    content = scraper.get(url=url).text
+    content = requests.get(url=url, impersonate='chrome110').text
     return BeautifulSoup(content, features="html.parser")
