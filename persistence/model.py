@@ -1,6 +1,6 @@
 from typing import List, Optional
 from datetime import datetime
-from sqlalchemy import ForeignKey, String, DateTime, Float, Boolean, Integer
+from sqlalchemy import ForeignKey, String, DateTime, Float, Boolean, Integer, Table, Column
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
@@ -87,6 +87,13 @@ class Color(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str] = mapped_column(String(100))
 
+vehicle_accessory = Table(
+    'vehicle_accessory',
+    Base.metadata,
+    Column('vehicle_id', ForeignKey('vehicle.id')),
+    Column('accessory_id', ForeignKey('accessory.id'))
+)
+
 class Vehicle(Base):
 
     __tablename__ = 'vehicle'
@@ -125,6 +132,23 @@ class Vehicle(Base):
 
     steering_id: Mapped[Optional[int]] = mapped_column(ForeignKey("steering.id"))
     steering: Mapped[Optional['Steering']] = relationship(cascade='all')
+
+    accessories: Mapped[List['Accessory']] = relationship(secondary=vehicle_accessory, cascade='all')
+
+class Accessory(Base):
+
+    __tablename__ = 'accessory'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    description: Mapped[str] = mapped_column(String(100))
+
+    def __eq__(self, value: object) -> bool:
+        if not value:
+            return False
+        if type(value) != type(self):
+            return False
+        return self.description == value.description
+
 
 class Advertisement(Base):
 

@@ -17,12 +17,12 @@ def get_value(element):
         return None
     return unescape(element.text)
 
-def perform_if_present(value, function):
+def perform_if_present(value, function, result = None):
     if value:
         if function:
             return function(value)
         return value
-    return None
+    return result
 
 def extract_price(text):
     pattern = r'R\S (\d+)\.(\d+)'
@@ -55,6 +55,7 @@ def read_content(url_content):
     price = perform_if_present(url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bJHaGt'}), lambda v : extract_price(v))
     average_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
     fipe_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
+    accessories = [ s.text for s in perform_if_present(url_content.find('span', string='Opcionais'), lambda v : v.next_sibling.extract(), result=[]) ]
 
     return {
         'code': get_value(code),
@@ -77,6 +78,7 @@ def read_content(url_content):
             'gear': get_value(gear),
             'color': get_value(color),
             'steering': get_value(steering),
+            'accessories': accessories,
         },
         'state': {
             'price': price,

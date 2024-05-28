@@ -34,6 +34,7 @@ def page_content_to_vehicle_entity(advertisement: model.Advertisement, dto) -> m
     result.gear = page_content_to_domain(dto_vehicle['gear'], model.Gear)
     result.color = page_content_to_domain(dto_vehicle['color'], model.Color)
     result.steering = page_content_to_domain(dto_vehicle['steering'], model.Steering)
+    result.accessories = [ page_content_to_domain(a, model.Accessory) for a in dto_vehicle['accessories'] ]
 
     return result
 
