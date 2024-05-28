@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload
+from datetime import datetime
 import os
 if __name__ == '__main__':
     from model import Base, Advertisement, Category, VehicleType, Model, Brand, Fuel, Gear, Steering, Color
@@ -32,9 +33,10 @@ def persist_advertisement(adv: Advertisement):
     with Session(engine) as session:
         adv_from_db = find_advertisement_by_code(adv.code)
         if adv_from_db:
+            adv.last_update_date = datetime.now()
             if adv.states and adv.states[0] not in adv_from_db.states:
                 adv_from_db.states.append(adv.states[0])
-                persist(adv_from_db)
+            persist(adv_from_db)
         else:
             vehicle = adv.vehicle
             vehicle.category = find_domain_or_new(vehicle.category.description, Category) if vehicle.category else None

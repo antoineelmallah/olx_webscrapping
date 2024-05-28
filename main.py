@@ -7,6 +7,7 @@ import traceback
 from retry import retry
 from datetime import datetime
 from tqdm import tqdm
+from client.geolocation_client import get_geocode
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
@@ -21,6 +22,10 @@ def process_page(main_content, page, pages):
         try:
             ad_content = get_page_content(url=link)
             advertising_entity = page_content_to_advertising_entity(ad_content, link)
+            geocode = get_geocode(advertising_entity.zipcode)
+            if geocode:
+                advertising_entity.lat = geocode[0]
+                advertising_entity.lon = geocode[1]
             persist_advertisement(advertising_entity)
         except Exception as e:
             log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')

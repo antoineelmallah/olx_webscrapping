@@ -133,11 +133,14 @@ class Advertisement(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     code: Mapped[str] = mapped_column(String(15))
     creation_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
+    last_update_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
     close_date: Mapped[DateTime] = mapped_column(DateTime(timezone=False), nullable=True)
     url: Mapped[str] = mapped_column(String(200))
     zipcode: Mapped[str] = mapped_column(String(8))
     city: Mapped[str] = mapped_column(String(50))
     neighborhood: Mapped[str] = mapped_column(String(50))
+    lat: Mapped[Float] = mapped_column(Float(), nullable=True)
+    lon: Mapped[Float] = mapped_column(Float(), nullable=True)
 
     vehicle: Mapped['Vehicle'] = relationship(back_populates='advertisement', cascade='all')
 
