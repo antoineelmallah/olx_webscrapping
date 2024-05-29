@@ -30,14 +30,17 @@ def find_advertisement_by_code(code: str) -> Advertisement:
             .where(Advertisement.code == code)
         return session.scalar(stmt)
     
-def persist_advertisement(adv: Advertisement):
+def persist_advertisement(adv: Advertisement, before_persist):
+
     with Session(engine) as session:
+    
         adv_from_db = find_advertisement_by_code(adv.code)
+        
         if adv_from_db:
-            adv.last_update_date = datetime.now()
+            adv_from_db.last_update_date = datetime.now()
             if adv.states and adv.states[0] not in adv_from_db.states:
                 adv_from_db.states.append(adv.states[0])
-            persist(adv_from_db)
+            adv = adv_from_db
         else:
             vehicle = adv.vehicle
             vehicle.category = find_domain_or_new(vehicle.category.description, Category) if vehicle.category else None
@@ -49,7 +52,11 @@ def persist_advertisement(adv: Advertisement):
             vehicle.steering = find_domain_or_new(vehicle.steering.description, Steering) if vehicle.steering else None
             vehicle.color = find_domain_or_new(vehicle.color.description, Color) if vehicle.color else None
             vehicle.accessories = [ find_domain_or_new(a.description, Accessory) for a in vehicle.accessories ]
-            persist(adv)
+        
+        before_persist(adv)
+        
+        persist(adv)
+
                 
 
 if __name__ == '__main__':

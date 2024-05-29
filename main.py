@@ -12,6 +12,15 @@ from client.geolocation_client import get_geocode
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
 
+def resolve_geocode(adv):
+    if not adv.zipcode:
+        return
+    if not adv.lat or not adv.lon:
+        geocode = get_geocode(adv.zipcode)
+        if geocode:
+            adv.lat = geocode[0]
+            adv.lon = geocode[1]
+
 @retry(Exception, tries=3, delay=2, logger=log)
 def process_page(main_content, page, pages):
     count = 0
@@ -22,11 +31,7 @@ def process_page(main_content, page, pages):
         try:
             ad_content = get_page_content(url=link)
             advertising_entity = page_content_to_advertising_entity(ad_content, link)
-            geocode = get_geocode(advertising_entity.zipcode)
-            if geocode:
-                advertising_entity.lat = geocode[0]
-                advertising_entity.lon = geocode[1]
-            persist_advertisement(advertising_entity)
+            persist_advertisement(advertising_entity, resolve_geocode)
         except Exception as e:
             log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
 
