@@ -32,6 +32,9 @@ def process_page(main_content, page, pages):
             ad_content = get_page_content(url=link)
             advertising_entity = page_content_to_advertising_entity(ad_content, link)
             persist_advertisement(advertising_entity, resolve_geocode)
+        except TypeError as e:
+            log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
+            raise e
         except Exception as e:
             log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
 
@@ -45,7 +48,10 @@ def main():
 
     pbar = tqdm(range(1, pages))
     for page in pbar:
-        process_page(main_content, page, pages)
+        try:
+            process_page(main_content, page, pages)
+        except:
+            continue
         main_content = get_page_content(url=f'{ url }{ path }&o={ page + 1 }')
 
 #import cProfile
