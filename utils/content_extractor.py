@@ -32,6 +32,15 @@ def extract_price(text):
             return int(''.join(matchs.groups()))
     return None
 
+def extract_doors(text):
+    pattern = r'(\d) portas'
+    if text and text.text:
+        matchs = re.search(pattern, text.text)
+        if matchs:
+            return int(matchs.group(1))
+    return None
+
+
 def read_content(url_content):
     code = url_content.find('span', attrs={'class', 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-16iz3i7-0 hjLLUR olx-color-neutral-120'})
     zipcode = perform_if_present(url_content.find('span', string='CEP'), lambda v : v.next_sibling) 
@@ -43,7 +52,7 @@ def read_content(url_content):
     gnv = perform_if_present(url_content.find('span', string='Possui Kit GNV'), lambda v : v.next_sibling)
     year = perform_if_present(url_content.find('span', string='Ano'), lambda v : v.next_sibling)
     mileage = perform_if_present(url_content.find('span', string='Quilometragem'), lambda v : v.next_sibling)
-    doors = perform_if_present(url_content.find('span', string='Portas'), lambda v : v.next_sibling)
+    doors = perform_if_present(url_content.find('span', string='Portas'), lambda v : extract_doors(v.next_sibling))
     category = perform_if_present(url_content.find('span', string='Categoria'), lambda v : v.next_sibling)
     model = perform_if_present(url_content.find('span', string='Modelo'), lambda v : v.next_sibling)
     brand = perform_if_present(url_content.find('span', string='Marca'), lambda v : v.next_sibling)
