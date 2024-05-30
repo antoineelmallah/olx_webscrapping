@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, or_
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 import os
@@ -29,6 +29,12 @@ def find_advertisement_by_code(code: str) -> Advertisement:
             .options(joinedload(Advertisement.vehicle).joinedload(Vehicle.accessories))\
             .where(Advertisement.code == code)
         return session.scalar(stmt)
+    
+def find_advertisements_without_geocode():
+    with Session(engine) as session:
+        stmt = select(Advertisement)\
+            .where(or_(Advertisement.lat == None, Advertisement.lon == None))
+        return [ row[0] for row in session.execute(stmt) ]
     
 def persist_advertisement(adv: Advertisement, before_persist):
 
