@@ -78,7 +78,7 @@ def read_content(url_content):
             'gnv': get_value(gnv),
             'year': get_value(year),
             'mileage': get_value(mileage),
-            'doors': get_value(doors),
+            'doors': doors,
             'category': get_value(category),
             'model': get_value(model),
             'brand': get_value(brand),
