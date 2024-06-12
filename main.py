@@ -21,22 +21,28 @@ def resolve_geocode(adv):
             adv.lat = geocode[0]
             adv.lon = geocode[1]
 
-@retry(Exception, tries=3, delay=2, logger=log)
+@retry(TypeError, tries=3, delay=2, logger=log)
+def process_link(link, count, page, pages):
+    log.info(f'[{ count }/{ page }/{ pages }] Processing link { link }')
+    try:
+        ad_content = get_page_content(url=link)
+        advertising_entity = page_content_to_advertising_entity(ad_content, link)
+        persist_advertisement(advertising_entity, resolve_geocode)
+    except TypeError as e:
+        log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
+        raise e
+    except Exception as e:
+        log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
+
 def process_page(main_content, page, pages):
     count = 0
     links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
     for link in links:
         count = count + 1
-        log.info(f'[{ count }/{ page }/{ pages }] Processing link { link }')
         try:
-            ad_content = get_page_content(url=link)
-            advertising_entity = page_content_to_advertising_entity(ad_content, link)
-            persist_advertisement(advertising_entity, resolve_geocode)
-        except TypeError as e:
-            log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
-            raise e
-        except Exception as e:
-            log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
+            process_link(link=link, count=count, page=page, pages=pages)
+        except:
+            pass
 
 def main():
     url =  'https://www.olx.com.br'
@@ -48,10 +54,7 @@ def main():
 
     pbar = tqdm(range(1, pages))
     for page in pbar:
-        try:
-            process_page(main_content, page, pages)
-        except:
-            continue
+        process_page(main_content, page, pages)
         main_content = get_page_content(url=f'{ url }{ path }&o={ page + 1 }')
 
 #import cProfile
