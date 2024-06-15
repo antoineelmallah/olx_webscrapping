@@ -15,7 +15,8 @@ def get_creation_datetime(code_snipet):
     if not len(groups):
         return None
     day, month, hour, minute = ( int(val) for val in groups[0] )
-    year = datetime.now().year
+    now = datetime.now()
+    year = now.year if now.month >= month else now.year - 1
     return datetime(
         day=day,
         month=month,
@@ -41,6 +42,6 @@ def get_gnv(code_snipet: str):
         return True
     return None
 
-formatted = get_creation_datetime('Publicado em 18/05 às 19: 22')
-
-print(formatted)
+if __name__ == '__main__':
+    formatted = get_creation_datetime('Publicado em 18/05 às 19: 22')
+    print(formatted)

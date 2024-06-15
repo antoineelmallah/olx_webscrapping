@@ -8,6 +8,7 @@ from retry import retry
 from datetime import datetime
 from tqdm import tqdm
 from client.geolocation_client import get_geocode
+from selenium.common.exceptions import TimeoutException
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
@@ -21,20 +22,20 @@ def resolve_geocode(adv):
             adv.lat = geocode[0]
             adv.lon = geocode[1]
 
-@retry(TypeError, tries=3, delay=2, logger=log)
+@retry(exceptions=(TypeError, TimeoutException), tries=3, delay=2, logger=log)
 def process_link(link, count, page, pages):
     log.info(f'[{ count }/{ page }/{ pages }] Processing link { link }')
     try:
         ad_content = get_page_content(url=link)
         advertising_entity = page_content_to_advertising_entity(ad_content, link)
         persist_advertisement(advertising_entity, resolve_geocode)
-    except TypeError as e:
+    except (TypeError, TimeoutException) as e:
         log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
         raise e
     except Exception as e:
         log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
 
-def process_page(main_content, page, pages):
+def process_main_page(main_content, page, pages):
     count = 0
     links = [ link['href'] for link in main_content.find_all('a', attrs={ 'class': 'olx-ad-card__link-wrapper' }) ]
     for link in links:
@@ -54,7 +55,7 @@ def main():
 
     pbar = tqdm(range(1, pages))
     for page in pbar:
-        process_page(main_content, page, pages)
+        process_main_page(main_content, page, pages)
         main_content = get_page_content(url=f'{ url }{ path }&o={ page + 1 }')
 
 #import cProfile

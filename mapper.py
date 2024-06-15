@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import persistence.model as model
-from utils.content_extractor import read_content
+from utils.content_extractor import read_content, get_average_price_and_fipe
 import utils.formatter as formatter
 
 def page_content_to_domain(description, domain_class):
@@ -38,14 +38,16 @@ def page_content_to_vehicle_entity(advertisement: model.Advertisement, dto) -> m
 
     return result
 
-def page_content_to_instant_state_entity(advertisement: model.Advertisement, dto) -> model.InstantState:
+def page_content_to_instant_state_entity(advertisement: model.Advertisement, dto, url) -> model.InstantState:
 
     dto_state = dto['state']
+
+    average_price, fipe_price = get_average_price_and_fipe(url=url)
     
     result = model.InstantState()
     result.price = formatter.get_as_type(dto_state['price'], float)
-    result.average_price = formatter.get_as_type(dto_state['average_price'], float)
-    result.fipe_price = formatter.get_as_type(dto_state['fipe_price'], float)
+    result.average_price = average_price
+    result.fipe_price = fipe_price
 
     return result
 
@@ -61,6 +63,6 @@ def page_content_to_advertising_entity(content: BeautifulSoup, url: str) -> mode
     result.creation_date = formatter.get_creation_datetime(dto['creation_date'])
     result.url = url
     result.vehicle = page_content_to_vehicle_entity(result, dto)
-    result.states.append(page_content_to_instant_state_entity(result, dto))
+    result.states.append(page_content_to_instant_state_entity(result, dto, url))
 
     return result

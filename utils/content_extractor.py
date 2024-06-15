@@ -1,6 +1,8 @@
 import re
 import math
 from html import unescape
+from selenium import webdriver
+from time import sleep
 
 def get_total_pages(main_content):
     pattern = r'(\d+) - (\d+) de ([0-9\.]+) resultados'
@@ -95,6 +97,40 @@ def read_content(url_content):
             'fipe_price': fipe_price
         }
     }
+
+def extract_float(text: str):
+    if not text:
+        return None
+    extracted_price = re.search(r'(\d+).(\d+)', text)
+    if extracted_price:
+        return float(''.join(extracted_price.groups()))
+    return None
+
+def get_average_price_and_fipe(url, wait=2):
+
+    options = webdriver.ChromeOptions()
+    options.add_argument("--disable-notifications")
+    options.add_experimental_option(
+        "prefs", {
+            # block image loading
+            "profile.managed_default_content_settings.images": 2,
+        }
+    )
+
+    driver = webdriver.Chrome(options=options)
+    driver.set_page_load_timeout(5)
+    driver.get(url=url)
+    sleep(wait)
+
+    xpath_average_price = '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[1]/div[1]/span'
+    xpath_fipe_price = '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[2]/div/span'
+
+    average_price = extract_float(driver.find_element(by='xpath', value=xpath_average_price).text)
+    fipe_price = extract_float(driver.find_element(by='xpath', value=xpath_fipe_price).text)
+
+    driver.quit()
+
+    return average_price, fipe_price
 
 if __name__ == '__main__':
     import sys

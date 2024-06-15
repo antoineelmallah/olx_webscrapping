@@ -13,8 +13,8 @@ class InstantState(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     datetime: Mapped[DateTime] = mapped_column(DateTime(timezone=False), default=datetime.now())
     price: Mapped[Float] = mapped_column(Float())
-    #average_price: Mapped[Float] = mapped_column(Float())
-    #fipe_price: Mapped[Float] = mapped_column(Float())
+    average_price: Mapped[int] = mapped_column(Integer())
+    fipe_price: Mapped[int] = mapped_column(Integer())
 
     advertisement_id: Mapped[int] = mapped_column(ForeignKey('advertisement.id'))
 
@@ -25,10 +25,10 @@ class InstantState(Base):
             return False
         if self.price != value.price:
             return False
-#        if self.average_price != value.average_price:
-#            return False
-#        if self.fipe_price != value.fipe_price:
-#            return False
+        if self.average_price != value.average_price:
+            return False
+        if self.fipe_price != value.fipe_price:
+            return False
         return True
 
 class Category(Base):
