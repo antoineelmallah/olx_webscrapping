@@ -8,28 +8,36 @@ from retry import retry
 from datetime import datetime
 from tqdm import tqdm
 from client.geolocation_client import get_geocode
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from utils.content_extractor import get_average_price_and_fipe
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
 
-def resolve_geocode(adv):
+def before_persist(adv):
+    # resolve geocode
     if not adv.zipcode:
         return
     if not adv.lat or not adv.lon:
+        log.info(f'*** FINDING LOCATION')
         geocode = get_geocode(adv.zipcode)
         if geocode:
             adv.lat = geocode[0]
             adv.lon = geocode[1]
+    # resolve prices
+    current_state = adv.current_state()
+    if current_state and (not current_state.average_price or not current_state.fipe_price):
+        log.info(f'*** FINDING PRICES')
+        current_state.average_price, current_state.fipe_price = get_average_price_and_fipe(url=adv.url)
 
-@retry(exceptions=(TypeError, TimeoutException), tries=3, delay=2, logger=log)
+@retry(exceptions=(TypeError, TimeoutException, NoSuchElementException), tries=3, delay=2, logger=log)
 def process_link(link, count, page, pages):
     log.info(f'[{ count }/{ page }/{ pages }] Processing link { link }')
     try:
         ad_content = get_page_content(url=link)
         advertising_entity = page_content_to_advertising_entity(ad_content, link)
-        persist_advertisement(advertising_entity, resolve_geocode)
-    except (TypeError, TimeoutException) as e:
+        persist_advertisement(advertising_entity, before_persist=before_persist)
+    except (TypeError, TimeoutException, NoSuchElementException) as e:
         log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
         raise e
     except Exception as e:

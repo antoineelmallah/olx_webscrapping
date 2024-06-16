@@ -169,3 +169,11 @@ class Advertisement(Base):
     vehicle: Mapped['Vehicle'] = relationship(back_populates='advertisement', cascade='all')
 
     states: Mapped[List['InstantState']] = relationship(cascade='all, delete-orphan')
+
+    def current_state(self):
+        if not self.states:
+            return None
+        dates = [ it.datetime for it in self.states if it.datetime ]
+        if not dates:
+            return None
+        return list(filter(lambda it : it.datetime == max(dates), self.states))[0]

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import persistence.model as model
-from utils.content_extractor import read_content, get_average_price_and_fipe
+from utils.content_extractor import read_content
 import utils.formatter as formatter
 
 def page_content_to_domain(description, domain_class):
@@ -42,12 +42,12 @@ def page_content_to_instant_state_entity(advertisement: model.Advertisement, dto
 
     dto_state = dto['state']
 
-    average_price, fipe_price = get_average_price_and_fipe(url=url)
+    #average_price, fipe_price = get_average_price_and_fipe(url=url)
     
     result = model.InstantState()
     result.price = formatter.get_as_type(dto_state['price'], float)
-    result.average_price = average_price
-    result.fipe_price = fipe_price
+    #result.average_price = average_price
+    #result.fipe_price = fipe_price
 
     return result
 

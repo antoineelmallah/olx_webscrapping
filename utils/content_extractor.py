@@ -64,8 +64,8 @@ def read_content(url_content):
     color = perform_if_present(url_content.find('span', string='Cor'), lambda v : v.next_sibling)
     steering = perform_if_present(url_content.find('span', string='Tipo de direção'), lambda v : v.next_sibling)
     price = perform_if_present(url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bJHaGt'}), lambda v : extract_price(v))
-    average_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
-    fipe_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
+    #average_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
+    #fipe_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
     accessories = [ s.text for s in perform_if_present(url_content.find('span', string='Opcionais'), lambda v : v.next_sibling.extract(), result=[]) ]
 
     return {
@@ -93,8 +93,8 @@ def read_content(url_content):
         },
         'state': {
             'price': price,
-            'average_price': average_price,
-            'fipe_price': fipe_price
+        #    'average_price': average_price,
+        #    'fipe_price': fipe_price
         }
     }
 
@@ -110,6 +110,8 @@ def get_average_price_and_fipe(url, wait=2):
 
     options = webdriver.ChromeOptions()
     options.add_argument("--disable-notifications")
+    #options.add_argument("--headless")
+    #options.add_argument("--window-size=%s" % WINDOW_SIZE)
     options.add_experimental_option(
         "prefs", {
             # block image loading
