@@ -14,34 +14,59 @@ from utils.content_extractor import get_average_price_and_fipe
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
 
-def before_persist(adv):
-    # resolve geocode
+@retry(exceptions=(TypeError), tries=3, delay=2, logger=log)
+def resolve_geolocation(adv):
     if not adv.zipcode:
+        log.warn(f'Not processing! Zipcode is null!')
         return
     if not adv.lat or not adv.lon:
         log.info(f'*** FINDING LOCATION')
-        geocode = get_geocode(adv.zipcode)
-        if geocode:
-            adv.lat = geocode[0]
-            adv.lon = geocode[1]
-    # resolve prices
-    current_state = adv.current_state()
-    if current_state and (not current_state.average_price or not current_state.fipe_price):
-        log.info(f'*** FINDING PRICES')
-        current_state.average_price, current_state.fipe_price = get_average_price_and_fipe(url=adv.url)
+        try:
+            geocode = get_geocode(adv.zipcode)
+            if geocode:
+                adv.lat = geocode[0]
+                adv.lon = geocode[1]
+        except TypeError as e:
+            log.error(f'Error finding location (retrying!) [ link: { adv.url } - { traceback.format_exc() }')
+            raise e
+        except Exception as e:
+            log.error(f'Error finding location [ link: { adv.url } - { traceback.format_exc() }')
 
-@retry(exceptions=(TypeError, TimeoutException, NoSuchElementException), tries=3, delay=2, logger=log)
+
+@retry(exceptions=(TimeoutException, NoSuchElementException), tries=3, delay=2, logger=log)
+def resolve_prices(adv):
+    vehicle = adv.vehicle
+    if not vehicle:
+        return
+    if not vehicle.average_price or not vehicle.fipe_price:
+        log.info(f'*** FINDING PRICES')
+        try:
+            average_price, fipe_price = get_average_price_and_fipe(url=adv.url)
+            vehicle.average_price = average_price
+            vehicle.fipe_price = fipe_price
+        except (TimeoutException, NoSuchElementException) as e:
+            log.error(f'Error finding prices (retrying!) [ link: { adv.url } - { traceback.format_exc() }')
+            raise e
+        except Exception as e:
+            log.error(f'Error finding prices [ link: { adv.url } - { traceback.format_exc() }')
+
+
+def before_persist(adv):
+    try:
+        #resolve_geolocation(adv=adv)
+        resolve_prices(adv=adv)
+    except Exception as e:
+        log.error(f'Error on before save [ link: { adv.url } - { traceback.format_exc() }')
+        
+
 def process_link(link, count, page, pages):
     log.info(f'[{ count }/{ page }/{ pages }] Processing link { link }')
     try:
         ad_content = get_page_content(url=link)
         advertising_entity = page_content_to_advertising_entity(ad_content, link)
         persist_advertisement(advertising_entity, before_persist=before_persist)
-    except (TypeError, TimeoutException, NoSuchElementException) as e:
-        log.error(f'Error (retrying!) [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
-        raise e
     except Exception as e:
-        log.error(f'Error [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
+        log.error(f'Error NOT PROCESSING!! [{ count }/{ page }/{ pages }] link: { link } - { traceback.format_exc() }')
 
 def process_main_page(main_content, page, pages):
     count = 0

@@ -106,10 +106,13 @@ def extract_float(text: str):
         return float(''.join(extracted_price.groups()))
     return None
 
-def get_average_price_and_fipe(url, wait=2):
+def get_average_price_and_fipe(url, wait=3):
 
     options = webdriver.ChromeOptions()
     options.add_argument("--disable-notifications")
+    options.add_argument("--disable-cache")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+    #options.add_argument('--proxy-server=%s' % proxy)
     #options.add_argument("--headless")
     #options.add_argument("--window-size=%s" % WINDOW_SIZE)
     options.add_experimental_option(
@@ -120,7 +123,8 @@ def get_average_price_and_fipe(url, wait=2):
     )
 
     driver = webdriver.Chrome(options=options)
-    driver.set_page_load_timeout(5)
+
+    #driver.set_page_load_timeout(8)
     driver.get(url=url)
     sleep(wait)
 
@@ -130,13 +134,12 @@ def get_average_price_and_fipe(url, wait=2):
     average_price = extract_float(driver.find_element(by='xpath', value=xpath_average_price).text)
     fipe_price = extract_float(driver.find_element(by='xpath', value=xpath_fipe_price).text)
 
+    driver.delete_all_cookies()
+
+    driver.close()
     driver.quit()
 
     return average_price, fipe_price
 
 if __name__ == '__main__':
-    import sys
-    sys.path.insert(0, '/home/mallah/Documents/olx_webscrapping')
-    from client.web_content_client import get_page_content
-    url = 'http://localhost:3000/template'
-    print(read_content(get_page_content(url)))
+    print(get_average_price_and_fipe(url='https://rj.olx.com.br/rio-de-janeiro-e-regiao/autos-e-pecas/carros-vans-e-utilitarios/citroen-c3-picasso-exc-a-1303576958'))
