@@ -51,6 +51,8 @@ def main():
     for page in pbar:
         process_main_page(main_content, page, pages)
         main_content = get_page_content(url=f'{ url }{ path }&o={ page + 1 }')
+        if page + 1 == pages:
+            process_main_page(main_content, page, pages)
 
 #import cProfile
 #cProfile.run('main()')

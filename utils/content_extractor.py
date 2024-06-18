@@ -2,6 +2,7 @@ import re
 import math
 from html import unescape
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 
 def get_total_pages(main_content):
@@ -106,6 +107,25 @@ def extract_float(text: str):
         return float(''.join(extracted_price.groups()))
     return None
 
+def find_element_fallback(driver, paths):
+    exception = None
+    for path in paths:
+        try:
+            return driver.find_element(by='xpath', value=path).text
+        except NoSuchElementException as e:
+            exception = e
+    raise exception
+
+xpaths_average_price = [
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[1]/div[1]/span',
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div/div[1]/div[1]/span',
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div/div[1]/div/span'
+    ]
+xpaths_fipe_price = [
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[2]/div/span',
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div/div[2]/div/span'
+    ]
+
 def get_average_price_and_fipe(url, wait=3):
 
     options = webdriver.ChromeOptions()
@@ -128,11 +148,8 @@ def get_average_price_and_fipe(url, wait=3):
     driver.get(url=url)
     sleep(wait)
 
-    xpath_average_price = '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[1]/div[1]/span'
-    xpath_fipe_price = '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[31]/div/div/div/div[2]/div[2]/div/span'
-
-    average_price = extract_float(driver.find_element(by='xpath', value=xpath_average_price).text)
-    fipe_price = extract_float(driver.find_element(by='xpath', value=xpath_fipe_price).text)
+    average_price = extract_float(find_element_fallback(driver=driver, paths=xpaths_average_price))
+    fipe_price = extract_float(find_element_fallback(driver=driver, paths=xpaths_fipe_price))
 
     driver.delete_all_cookies()
 
