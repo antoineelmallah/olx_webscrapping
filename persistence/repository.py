@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, select, or_
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, contains_eager
 from datetime import datetime
 import os
 if __name__ == '__main__':
@@ -35,7 +35,15 @@ def find_advertisements_without_geocode():
         stmt = select(Advertisement)\
             .where(or_(Advertisement.lat == None, Advertisement.lon == None))
         return [ row[0] for row in session.execute(stmt) ]
-    
+       
+def find_advertisements_without_prices():
+    with Session(engine) as session:
+        return session.query(Advertisement)\
+            .join(Advertisement.vehicle)\
+            .options(contains_eager(Advertisement.vehicle))\
+            .filter(or_(Vehicle.average_price == None, Vehicle.fipe_price == None))\
+            .all()
+
 def persist_advertisement(adv: Advertisement, before_persist):
 
     with Session(engine) as session:

@@ -4,52 +4,13 @@ from mapper import page_content_to_advertising_entity
 from persistence.repository import persist_advertisement
 import logging
 import traceback
-from retry import retry
 from datetime import datetime
 from tqdm import tqdm
-from client.geolocation_client import get_geocode
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from utils.content_extractor import get_average_price_and_fipe
+from service.price_service import resolve_prices
+from service.geolocation_service import resolve_geolocation
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
-
-@retry(exceptions=(TypeError), tries=3, delay=2, logger=log)
-def resolve_geolocation(adv):
-    if not adv.zipcode:
-        log.warn(f'Not processing! Zipcode is null!')
-        return
-    if not adv.lat or not adv.lon:
-        log.info(f'*** FINDING LOCATION')
-        try:
-            geocode = get_geocode(adv.zipcode)
-            if geocode:
-                adv.lat = geocode[0]
-                adv.lon = geocode[1]
-        except TypeError as e:
-            log.error(f'Error finding location (retrying!) [ link: { adv.url } - { traceback.format_exc() }')
-            raise e
-        except Exception as e:
-            log.error(f'Error finding location [ link: { adv.url } - { traceback.format_exc() }')
-
-
-@retry(exceptions=(TimeoutException, NoSuchElementException), tries=3, delay=2, logger=log)
-def resolve_prices(adv):
-    vehicle = adv.vehicle
-    if not vehicle:
-        return
-    if not vehicle.average_price or not vehicle.fipe_price:
-        log.info(f'*** FINDING PRICES')
-        try:
-            average_price, fipe_price = get_average_price_and_fipe(url=adv.url)
-            vehicle.average_price = average_price
-            vehicle.fipe_price = fipe_price
-        except (TimeoutException, NoSuchElementException) as e:
-            log.error(f'Error finding prices (retrying!) [ link: { adv.url } - { traceback.format_exc() }')
-            raise e
-        except Exception as e:
-            log.error(f'Error finding prices [ link: { adv.url } - { traceback.format_exc() }')
-
 
 def before_persist(adv):
     try:
