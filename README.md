@@ -30,4 +30,6 @@ To run application, follow the steps:
 
 `pip install -r requirements.txt`
 
-7. Run file main.py
+7. Run repository.py, inside persistence folder to create database objects.
+
+8. Run file main.py
