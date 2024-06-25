@@ -1,12 +1,12 @@
 from retry import retry
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from utils.content_extractor import get_average_price_and_fipe
 import logging
 import traceback
 
 log = logging.getLogger(__name__)
 
-@retry(exceptions=(TimeoutException), tries=3, delay=2, logger=log)
+@retry(exceptions=(TimeoutException, NoSuchElementException), tries=2, delay=2, logger=log)
 def resolve_prices(adv):
     vehicle = adv.vehicle
     if not vehicle:
@@ -17,7 +17,7 @@ def resolve_prices(adv):
             average_price, fipe_price = get_average_price_and_fipe(url=adv.url)
             vehicle.average_price = average_price
             vehicle.fipe_price = fipe_price
-        except TimeoutException as e:
+        except (TimeoutException, NoSuchElementException) as e:
             log.error(f'Error finding prices (retrying!) [ link: { adv.url } - { traceback.format_exc() }')
             raise e
         except Exception as e:
