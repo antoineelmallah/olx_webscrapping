@@ -117,6 +117,7 @@ def find_element_fallback(driver, paths):
     raise exception
 
 xpaths_average_price = [
+    '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[33]/div/div/div/div/div[1]/div/span',
     '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[33]/div/div/div/div[2]/div[1]/div[1]/span',
     '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[32]/div/div/div/div/div[1]/div/span',
     '//*[@id="content"]/div[2]/div/div[2]/div[1]/div[32]/div/div/div/div[2]/div[1]/div[1]/span',
