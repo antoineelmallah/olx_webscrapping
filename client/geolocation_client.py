@@ -31,8 +31,16 @@ def get_geocode(zipcode):
     try:
         return get_with_brazilcep(zipcode)
     except Exception as e:
-        result = get_with_zipcodestack(zipcode)
-        return result if result else get_with_zipcodestack(zipcode[:5] + '000')
+        retry = 0
+        result = None
+        while result is None and retry <= 4:
+            if retry < 4 and zipcode[7 - retry] == '0':
+                retry = retry + 1
+                continue
+            z = zipcode[:(8 - retry)] + ('0' * retry)
+            result = get_with_zipcodestack(zipcode=z)
+            retry = retry + 1
+        return result
 
 if __name__ == '__main__':
-    print(get_geocode('25655151'))
+    print(get_geocode('21700100'))
