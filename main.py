@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().i
 
 def before_persist(adv):
     try:
-        #resolve_geolocation(adv=adv)
+        resolve_geolocation(adv=adv)
         resolve_prices(adv=adv)
     except Exception as e:
         log.error(f'Error on before save [ link: { adv.url } - { traceback.format_exc() }')

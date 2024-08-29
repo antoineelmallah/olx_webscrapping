@@ -45,11 +45,11 @@ def extract_doors(text):
 
 
 def read_content(url_content):
-    code = url_content.find('span', attrs={'class', 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-16iz3i7-0 hjLLUR olx-color-neutral-120'})
+    code = url_content.find('span', attrs={'class', 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-16iz3i7-0 kuirEE olx-color-neutral-120'})
     zipcode = perform_if_present(url_content.find('span', string='CEP'), lambda v : v.next_sibling) 
     city = perform_if_present(url_content.find('span', string='Município'), lambda v : v.next_sibling) 
     neighborhood = perform_if_present(url_content.find('span', string='Bairro'), lambda v : v.next_sibling) 
-    creation_date = url_content.find('span', attrs={'class': 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-1oq8jzc-0 dWayMW olx-color-neutral-120'})
+    creation_date = url_content.find('span', attrs={'class': 'olx-text olx-text--caption olx-text--block olx-text--regular ad__sc-1oq8jzc-0 eSgKoP olx-color-neutral-120'})
     description = url_content.find('h1')
     hp = perform_if_present(url_content.find('span', string='Potência do motor'), lambda v : v.next_sibling) 
     gnv = perform_if_present(url_content.find('span', string='Possui Kit GNV'), lambda v : v.next_sibling)
@@ -64,7 +64,7 @@ def read_content(url_content):
     gear = perform_if_present(url_content.find('span', string='Câmbio'), lambda v : v.next_sibling)
     color = perform_if_present(url_content.find('span', string='Cor'), lambda v : v.next_sibling)
     steering = perform_if_present(url_content.find('span', string='Tipo de direção'), lambda v : v.next_sibling)
-    price = perform_if_present(url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bJHaGt'}), lambda v : extract_price(v))
+    price = perform_if_present(url_content.find('h2', attrs={'class', 'olx-text olx-text--title-large olx-text--block ad__sc-1leoitd-0 bpLbCi'}), lambda v : extract_price(v))
     #average_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
     #fipe_price = perform_if_present(url_content.find('span', attrs={'class': 'sc-gswNZR eIiKCz'}), lambda v : extract_price(v))
     accessories = [ s.text for s in perform_if_present(url_content.find('span', string='Opcionais'), lambda v : v.next_sibling.extract(), result=[]) ]
