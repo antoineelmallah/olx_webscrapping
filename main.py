@@ -41,7 +41,7 @@ def process_main_page(main_content, page, pages):
 
 def main():
     url =  'https://www.olx.com.br'
-    path = '/autos-e-pecas/carros-vans-e-utilitarios/estado-rj?ctp=9&ctp=8&ctp=5&ctp=3&ctp=7&f=p&gb=1&gb=2&gb=3&me=100000&ms=0&pe=50000&ps=30000&re=75&rs=50&fncs=1'
+    path = '/autos-e-pecas/carros-vans-e-utilitarios/estado-rj?ps=30000&pe=50000&lis=home_body_search_bar_2020'
 
     main_content = get_page_content(url=f'{ url }{ path }&o=1')
 
