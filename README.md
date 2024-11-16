@@ -2,33 +2,42 @@ To run application, follow the steps:
 
 1. Install virtualenv
 
-`pip install virtualenv`
+    `pip install virtualenv --user`
 
 2. Create a virtualenv
 
-`virtualenv venv`
+    `virtualenv venv`
 
 3. Ensure virtualenv in activated
 
-3.1. To activate:
-`source .venv/bin/activate`
+    1. To activate:
+    `source .venv/bin/activate`
 
-3.2. To deactivate:
-`deactivate`
+    2. To deactivate:
+    `deactivate`
 
 4. Install MariaDB and create one database
 
+    1. Install MariaDB connector
+
+    `sudo apt install libmariadb3 libmariadb-dev`
+
+    2. Install MariaDb: 
+    
+    `sudo apt install mariadb-server`
+
 5. Create 2 environment variables on .bashrc file:
 
-5.1. Database connection string
-`export WEBSCRAPING_DB_CONNECTION_STRING=mariadb+mariadbconnector://<USERNAME>:<PASSWORD>@127.0.0.1:3306/<DATABASE_NAME>`
+    1. Database connection string
+    `export WEBSCRAPING_DB_CONNECTION_STRING=mariadb+mariadbconnector://<USERNAME>:<PASSWORD>@127.0.0.1:3306/<DATABASE_NAME>`
 
-5.2. Zipcodestack api key (Free geocode API - https://zipcodestack.com/)
-`export ZIPCODESTACK_API_KEY=...`
+    2. Zipcodestack api key (Free geocode API - https://zipcodestack.com/)
+
+    `export ZIPCODESTACK_API_KEY=...`
 
 6. Install all dependencies
 
-`pip install -r requirements.txt`
+    `pip install -r requirements.txt`
 
 7. Run repository.py, inside persistence folder to create database objects.
 
