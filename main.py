@@ -8,7 +8,9 @@ from datetime import datetime
 from tqdm import tqdm
 from service.price_service import resolve_prices
 from service.geolocation_service import resolve_geolocation
+from pathlib import Path
 
+Path('./logs').mkdir(parents=True, exist_ok=True)
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename=f'./logs/log_{ datetime.now().isoformat(sep="_") }.log')
 
